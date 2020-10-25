@@ -1,59 +1,54 @@
-/*    */ package net.minecraft.server;
-/*    */ 
-/*    */ public class TileEntitySign
-/*    */   extends TileEntity {
-/*  5 */   public String[] lines = { "", "", "", "" };
-/*  6 */   public int b = -1;
-/*    */   
-/*    */   private boolean isEditable = true;
-/*    */ 
-/*    */   
-/*    */   public void b(NBTTagCompound nbttagcompound) {
-/* 12 */     super.b(nbttagcompound);
-/* 13 */     nbttagcompound.setString("Text1", this.lines[0]);
-/* 14 */     nbttagcompound.setString("Text2", this.lines[1]);
-/* 15 */     nbttagcompound.setString("Text3", this.lines[2]);
-/* 16 */     nbttagcompound.setString("Text4", this.lines[3]);
-/*    */   }
-/*    */   
-/*    */   public void a(NBTTagCompound nbttagcompound) {
-/* 20 */     this.isEditable = false;
-/* 21 */     super.a(nbttagcompound);
-/*    */     
-/* 23 */     for (int i = 0; i < 4; i++) {
-/* 24 */       this.lines[i] = nbttagcompound.getString("Text" + (i + 1));
-/* 25 */       if (this.lines[i].length() > 15) {
-/* 26 */         this.lines[i] = this.lines[i].substring(0, 15);
-/*    */       }
-/*    */     } 
-/*    */   }
-/*    */   
-/*    */   public Packet f() {
-/* 32 */     String[] astring = new String[4];
-/*    */     
-/* 34 */     for (int i = 0; i < 4; i++) {
-/* 35 */       astring[i] = this.lines[i];
-/*    */ 
-/*    */       
-/* 38 */       if (this.lines[i].length() > 15) {
-/* 39 */         astring[i] = this.lines[i].substring(0, 15);
-/*    */       }
-/*    */     } 
-/*    */ 
-/*    */     
-/* 44 */     return new Packet130UpdateSign(this.x, this.y, this.z, astring);
-/*    */   }
-/*    */ 
-/*    */   
-/* 48 */   public boolean a() { return this.isEditable; }
-/*    */ 
-/*    */ 
-/*    */   
-/* 52 */   public void a(boolean flag) { this.isEditable = flag; }
-/*    */ }
+package net.minecraft.server;
 
+public class TileEntitySign extends TileEntity {
 
-/* Location:              C:\Users\calmilamsy\Downloads\craftbukkit-1092-0f15ea67210f5e56ac6a23b7a714564654888e9f.jar!\net\minecraft\server\TileEntitySign.class
- * Java compiler version: 5 (49.0)
- * JD-Core Version:       1.0.4
- */
+    public String[] lines = new String[] { "", "", "", ""};
+    public int b = -1;
+    private boolean isEditable = true;
+
+    public TileEntitySign() {}
+
+    public void b(NBTTagCompound nbttagcompound) {
+        super.b(nbttagcompound);
+        nbttagcompound.setString("Text1", this.lines[0]);
+        nbttagcompound.setString("Text2", this.lines[1]);
+        nbttagcompound.setString("Text3", this.lines[2]);
+        nbttagcompound.setString("Text4", this.lines[3]);
+    }
+
+    public void a(NBTTagCompound nbttagcompound) {
+        this.isEditable = false;
+        super.a(nbttagcompound);
+
+        for (int i = 0; i < 4; ++i) {
+            this.lines[i] = nbttagcompound.getString("Text" + (i + 1));
+            if (this.lines[i].length() > 15) {
+                this.lines[i] = this.lines[i].substring(0, 15);
+            }
+        }
+    }
+
+    public Packet f() {
+        String[] astring = new String[4];
+
+        for (int i = 0; i < 4; ++i) {
+            astring[i] = this.lines[i];
+
+            // CraftBukkit start - limit sign text to 15 chars per line
+            if (this.lines[i].length() > 15) {
+                astring[i] = this.lines[i].substring(0, 15);
+            }
+            // CraftBukkit end
+        }
+
+        return new Packet130UpdateSign(this.x, this.y, this.z, astring);
+    }
+
+    public boolean a() {
+        return this.isEditable;
+    }
+
+    public void a(boolean flag) {
+        this.isEditable = flag;
+    }
+}

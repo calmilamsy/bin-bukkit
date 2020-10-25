@@ -2,30 +2,25 @@ package net.minecraft.server;
 
 import java.io.File;
 import java.util.List;
-import java.util.UUID;
+import java.util.UUID; // CraftBukkit
 
 public interface IDataManager {
-  WorldData c();
-  
-  void b();
-  
-  IChunkLoader a(WorldProvider paramWorldProvider);
-  
-  void a(WorldData paramWorldData, List paramList);
-  
-  void a(WorldData paramWorldData);
-  
-  PlayerFileData d();
-  
-  void e();
-  
-  File b(String paramString);
-  
-  UUID getUUID();
+
+    WorldData c();
+
+    void b();
+
+    IChunkLoader a(WorldProvider worldprovider);
+
+    void a(WorldData worlddata, List list);
+
+    void a(WorldData worlddata);
+
+    PlayerFileData d();
+
+    void e();
+
+    File b(String s);
+
+    UUID getUUID(); // CraftBukkit
 }
-
-
-/* Location:              C:\Users\calmilamsy\Downloads\craftbukkit-1092-0f15ea67210f5e56ac6a23b7a714564654888e9f.jar!\net\minecraft\server\IDataManager.class
- * Java compiler version: 5 (49.0)
- * JD-Core Version:       1.0.4
- */

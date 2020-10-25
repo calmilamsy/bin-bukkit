@@ -1,211 +1,206 @@
-/*     */ package net.minecraft.server;
-/*     */ 
-/*     */ import java.util.ArrayList;
-/*     */ import java.util.HashMap;
-/*     */ import java.util.List;
-/*     */ import java.util.Map;
-/*     */ import java.util.UUID;
-/*     */ import org.bukkit.Bukkit;
-/*     */ import org.bukkit.World;
-/*     */ import org.bukkit.craftbukkit.CraftServer;
-/*     */ import org.bukkit.craftbukkit.CraftWorld;
-/*     */ import org.bukkit.craftbukkit.map.CraftMapView;
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ public class WorldMap
-/*     */   extends WorldMapBase
-/*     */ {
-/*     */   public int b;
-/*     */   public int c;
-/*     */   public byte map;
-/*     */   public byte e;
-/*  23 */   public byte[] f = new byte[16384];
-/*     */   public int g;
-/*  25 */   public List h = new ArrayList();
-/*  26 */   private Map j = new HashMap();
-/*  27 */   public List i = new ArrayList();
-/*     */   
-/*     */   public final CraftMapView mapView;
-/*     */   
-/*     */   private CraftServer server;
-/*  32 */   private UUID uniqueId = null;
-/*     */ 
-/*     */   
-/*     */   public WorldMap(String s) {
-/*  36 */     super(s);
-/*     */     
-/*  38 */     this.mapView = new CraftMapView(this);
-/*  39 */     this.server = (CraftServer)Bukkit.getServer();
-/*     */   }
-/*     */ 
-/*     */ 
-/*     */   
-/*     */   public void a(NBTTagCompound nbttagcompound) {
-/*  45 */     byte dimension = nbttagcompound.c("dimension");
-/*     */     
-/*  47 */     if (dimension >= 10) {
-/*  48 */       long least = nbttagcompound.getLong("UUIDLeast");
-/*  49 */       long most = nbttagcompound.getLong("UUIDMost");
-/*     */       
-/*  51 */       if (least != 0L && most != 0L) {
-/*  52 */         this.uniqueId = new UUID(most, least);
-/*     */         
-/*  54 */         CraftWorld world = (CraftWorld)this.server.getWorld(this.uniqueId);
-/*     */         
-/*  56 */         if (world == null) {
-/*     */ 
-/*     */           
-/*  59 */           dimension = Byte.MAX_VALUE;
-/*     */         } else {
-/*  61 */           dimension = (byte)(world.getHandle()).dimension;
-/*     */         } 
-/*     */       } 
-/*     */     } 
-/*     */     
-/*  66 */     this.map = dimension;
-/*     */     
-/*  68 */     this.b = nbttagcompound.e("xCenter");
-/*  69 */     this.c = nbttagcompound.e("zCenter");
-/*  70 */     this.e = nbttagcompound.c("scale");
-/*  71 */     if (this.e < 0) {
-/*  72 */       this.e = 0;
-/*     */     }
-/*     */     
-/*  75 */     if (this.e > 4) {
-/*  76 */       this.e = 4;
-/*     */     }
-/*     */     
-/*  79 */     short short1 = nbttagcompound.d("width");
-/*  80 */     short short2 = nbttagcompound.d("height");
-/*     */     
-/*  82 */     if (short1 == 128 && short2 == 128) {
-/*  83 */       this.f = nbttagcompound.j("colors");
-/*     */     } else {
-/*  85 */       byte[] abyte = nbttagcompound.j("colors");
-/*     */       
-/*  87 */       this.f = new byte[16384];
-/*  88 */       int i = (128 - short1) / 2;
-/*  89 */       int j = (128 - short2) / 2;
-/*     */       
-/*  91 */       for (int k = 0; k < short2; k++) {
-/*  92 */         int l = k + j;
-/*     */         
-/*  94 */         if (l >= 0 || l < 128) {
-/*  95 */           for (int i1 = 0; i1 < short1; i1++) {
-/*  96 */             int j1 = i1 + i;
-/*     */             
-/*  98 */             if (j1 >= 0 || j1 < 128) {
-/*  99 */               this.f[j1 + l * 128] = abyte[i1 + k * short1];
-/*     */             }
-/*     */           } 
-/*     */         }
-/*     */       } 
-/*     */     } 
-/*     */   }
-/*     */ 
-/*     */   
-/*     */   public void b(NBTTagCompound nbttagcompound) {
-/* 109 */     if (this.map >= 10) {
-/* 110 */       if (this.uniqueId == null) {
-/* 111 */         for (World world : this.server.getWorlds()) {
-/* 112 */           CraftWorld cWorld = (CraftWorld)world;
-/* 113 */           if ((cWorld.getHandle()).dimension == this.map) {
-/* 114 */             this.uniqueId = cWorld.getUID();
-/*     */             
-/*     */             break;
-/*     */           } 
-/*     */         } 
-/*     */       }
-/*     */       
-/* 121 */       if (this.uniqueId != null) {
-/* 122 */         nbttagcompound.setLong("UUIDLeast", this.uniqueId.getLeastSignificantBits());
-/* 123 */         nbttagcompound.setLong("UUIDMost", this.uniqueId.getMostSignificantBits());
-/*     */       } 
-/*     */     } 
-/*     */     
-/* 127 */     nbttagcompound.a("dimension", this.map);
-/* 128 */     nbttagcompound.a("xCenter", this.b);
-/* 129 */     nbttagcompound.a("zCenter", this.c);
-/* 130 */     nbttagcompound.a("scale", this.e);
-/* 131 */     nbttagcompound.a("width", (short)128);
-/* 132 */     nbttagcompound.a("height", (short)128);
-/* 133 */     nbttagcompound.a("colors", this.f);
-/*     */   }
-/*     */   
-/*     */   public void a(EntityHuman entityhuman, ItemStack itemstack) {
-/* 137 */     if (!this.j.containsKey(entityhuman)) {
-/* 138 */       WorldMapHumanTracker worldmaphumantracker = new WorldMapHumanTracker(this, entityhuman);
-/*     */       
-/* 140 */       this.j.put(entityhuman, worldmaphumantracker);
-/* 141 */       this.h.add(worldmaphumantracker);
-/*     */     } 
-/*     */     
-/* 144 */     this.i.clear();
-/*     */     
-/* 146 */     for (int i = 0; i < this.h.size(); i++) {
-/* 147 */       WorldMapHumanTracker worldmaphumantracker1 = (WorldMapHumanTracker)this.h.get(i);
-/*     */       
-/* 149 */       if (!worldmaphumantracker1.trackee.dead && worldmaphumantracker1.trackee.inventory.c(itemstack)) {
-/* 150 */         float f = (float)(worldmaphumantracker1.trackee.locX - this.b) / (1 << this.e);
-/* 151 */         float f1 = (float)(worldmaphumantracker1.trackee.locZ - this.c) / (1 << this.e);
-/* 152 */         byte b0 = 64;
-/* 153 */         byte b1 = 64;
-/*     */         
-/* 155 */         if (f >= -b0 && f1 >= -b1 && f <= b0 && f1 <= b1) {
-/* 156 */           byte b2 = 0;
-/* 157 */           byte b3 = (byte)(int)((f * 2.0F) + 0.5D);
-/* 158 */           byte b4 = (byte)(int)((f1 * 2.0F) + 0.5D);
-/*     */           
-/* 160 */           byte b5 = (byte)(int)((worldmaphumantracker1.trackee.yaw * 16.0F / 360.0F) + 0.5D);
-/*     */           
-/* 162 */           if (this.map < 0) {
-/* 163 */             int j = this.g / 10;
-/*     */             
-/* 165 */             b5 = (byte)(j * j * 34187121 + j * 121 >> 15 & 0xF);
-/*     */           } 
-/*     */           
-/* 168 */           if (worldmaphumantracker1.trackee.dimension == this.map) {
-/* 169 */             this.i.add(new WorldMapOrienter(this, b2, b3, b4, b5));
-/*     */           }
-/*     */         } 
-/*     */       } else {
-/* 173 */         this.j.remove(worldmaphumantracker1.trackee);
-/* 174 */         this.h.remove(worldmaphumantracker1);
-/*     */       } 
-/*     */     } 
-/*     */   }
-/*     */   
-/*     */   public byte[] a(ItemStack itemstack, World world, EntityHuman entityhuman) {
-/* 180 */     WorldMapHumanTracker worldmaphumantracker = (WorldMapHumanTracker)this.j.get(entityhuman);
-/*     */     
-/* 182 */     if (worldmaphumantracker == null) {
-/* 183 */       return null;
-/*     */     }
-/* 185 */     return worldmaphumantracker.a(itemstack);
-/*     */   }
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */   
-/*     */   public void a(int i, int j, int k) {
-/* 192 */     a();
-/*     */     
-/* 194 */     for (int l = 0; l < this.h.size(); l++) {
-/* 195 */       WorldMapHumanTracker worldmaphumantracker = (WorldMapHumanTracker)this.h.get(l);
-/*     */       
-/* 197 */       if (worldmaphumantracker.b[i] < 0 || worldmaphumantracker.b[i] > j) {
-/* 198 */         worldmaphumantracker.b[i] = j;
-/*     */       }
-/*     */       
-/* 201 */       if (worldmaphumantracker.c[i] < 0 || worldmaphumantracker.c[i] < k)
-/* 202 */         worldmaphumantracker.c[i] = k; 
-/*     */     } 
-/*     */   }
-/*     */ }
+package net.minecraft.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-/* Location:              C:\Users\calmilamsy\Downloads\craftbukkit-1092-0f15ea67210f5e56ac6a23b7a714564654888e9f.jar!\net\minecraft\server\WorldMap.class
- * Java compiler version: 5 (49.0)
- * JD-Core Version:       1.0.4
- */
+// CraftBukkit start
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.map.CraftMapView;
+// CraftBukkit end
+
+public class WorldMap extends WorldMapBase {
+
+    public int b;
+    public int c;
+    public byte map;
+    public byte e;
+    public byte[] f = new byte[16384];
+    public int g;
+    public List h = new ArrayList();
+    private Map j = new HashMap();
+    public List i = new ArrayList();
+
+    // CraftBukkit start
+    public final CraftMapView mapView;
+    private CraftServer server;
+    private UUID uniqueId = null;
+    // CraftBukkit end
+
+    public WorldMap(String s) {
+        super(s);
+        // CraftBukkit start
+        mapView = new CraftMapView(this);
+        server = (CraftServer) Bukkit.getServer();
+        // CraftBukkit end
+    }
+
+    public void a(NBTTagCompound nbttagcompound) {
+        // CraftBukkit start
+        byte dimension = nbttagcompound.c("dimension");
+
+        if (dimension >= 10) {
+            long least = nbttagcompound.getLong("UUIDLeast");
+            long most = nbttagcompound.getLong("UUIDMost");
+
+            if (least != 0L && most != 0L) {
+                this.uniqueId = new UUID(most, least);
+
+                CraftWorld world = (CraftWorld) server.getWorld(this.uniqueId);
+                // Check if the stored world details are correct.
+                if (world == null) {
+                    /* All Maps which do not have their valid world loaded are set to a dimension which hopefully won't be reached.
+                       This is to prevent them being corrupted with the wrong map data. */
+                    dimension = 127;
+                } else {
+                    dimension = (byte) world.getHandle().dimension;
+                }
+            }
+        }
+
+        this.map = dimension;
+        // CraftBukkit end
+        this.b = nbttagcompound.e("xCenter");
+        this.c = nbttagcompound.e("zCenter");
+        this.e = nbttagcompound.c("scale");
+        if (this.e < 0) {
+            this.e = 0;
+        }
+
+        if (this.e > 4) {
+            this.e = 4;
+        }
+
+        short short1 = nbttagcompound.d("width");
+        short short2 = nbttagcompound.d("height");
+
+        if (short1 == 128 && short2 == 128) {
+            this.f = nbttagcompound.j("colors");
+        } else {
+            byte[] abyte = nbttagcompound.j("colors");
+
+            this.f = new byte[16384];
+            int i = (128 - short1) / 2;
+            int j = (128 - short2) / 2;
+
+            for (int k = 0; k < short2; ++k) {
+                int l = k + j;
+
+                if (l >= 0 || l < 128) {
+                    for (int i1 = 0; i1 < short1; ++i1) {
+                        int j1 = i1 + i;
+
+                        if (j1 >= 0 || j1 < 128) {
+                            this.f[j1 + l * 128] = abyte[i1 + k * short1];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void b(NBTTagCompound nbttagcompound) {
+        // CraftBukkit start
+        if (this.map >= 10) {
+            if (this.uniqueId == null) {
+                for (org.bukkit.World world : server.getWorlds()) {
+                    CraftWorld cWorld = (CraftWorld) world;
+                    if (cWorld.getHandle().dimension == this.map) {
+                        this.uniqueId = cWorld.getUID();
+                        break;
+                    }
+                }
+            }
+            /* Perform a second check to see if a matching world was found, this is a necessary
+               change incase Maps are forcefully unlinked from a World and lack a UID.*/
+            if (this.uniqueId != null) {
+                nbttagcompound.setLong("UUIDLeast", this.uniqueId.getLeastSignificantBits());
+                nbttagcompound.setLong("UUIDMost", this.uniqueId.getMostSignificantBits());
+            }
+        }
+        // CraftBukkit end
+        nbttagcompound.a("dimension", this.map);
+        nbttagcompound.a("xCenter", this.b);
+        nbttagcompound.a("zCenter", this.c);
+        nbttagcompound.a("scale", this.e);
+        nbttagcompound.a("width", (short) 128);
+        nbttagcompound.a("height", (short) 128);
+        nbttagcompound.a("colors", this.f);
+    }
+
+    public void a(EntityHuman entityhuman, ItemStack itemstack) {
+        if (!this.j.containsKey(entityhuman)) {
+            WorldMapHumanTracker worldmaphumantracker = new WorldMapHumanTracker(this, entityhuman);
+
+            this.j.put(entityhuman, worldmaphumantracker);
+            this.h.add(worldmaphumantracker);
+        }
+
+        this.i.clear();
+
+        for (int i = 0; i < this.h.size(); ++i) {
+            WorldMapHumanTracker worldmaphumantracker1 = (WorldMapHumanTracker) this.h.get(i);
+
+            if (!worldmaphumantracker1.trackee.dead && worldmaphumantracker1.trackee.inventory.c(itemstack)) {
+                float f = (float) (worldmaphumantracker1.trackee.locX - (double) this.b) / (float) (1 << this.e);
+                float f1 = (float) (worldmaphumantracker1.trackee.locZ - (double) this.c) / (float) (1 << this.e);
+                byte b0 = 64;
+                byte b1 = 64;
+
+                if (f >= (float) (-b0) && f1 >= (float) (-b1) && f <= (float) b0 && f1 <= (float) b1) {
+                    byte b2 = 0;
+                    byte b3 = (byte) ((int) ((double) (f * 2.0F) + 0.5D));
+                    byte b4 = (byte) ((int) ((double) (f1 * 2.0F) + 0.5D));
+                    // CraftBukkit
+                    byte b5 = (byte) ((int) ((double) (worldmaphumantracker1.trackee.yaw * 16.0F / 360.0F) + 0.5D));
+
+                    if (this.map < 0) {
+                        int j = this.g / 10;
+
+                        b5 = (byte) (j * j * 34187121 + j * 121 >> 15 & 15);
+                    }
+
+                    if (worldmaphumantracker1.trackee.dimension == this.map) {
+                        this.i.add(new WorldMapOrienter(this, b2, b3, b4, b5));
+                    }
+                }
+            } else {
+                this.j.remove(worldmaphumantracker1.trackee);
+                this.h.remove(worldmaphumantracker1);
+            }
+        }
+    }
+
+    public byte[] a(ItemStack itemstack, World world, EntityHuman entityhuman) {
+        WorldMapHumanTracker worldmaphumantracker = (WorldMapHumanTracker) this.j.get(entityhuman);
+
+        if (worldmaphumantracker == null) {
+            return null;
+        } else {
+            byte[] abyte = worldmaphumantracker.a(itemstack);
+
+            return abyte;
+        }
+    }
+
+    public void a(int i, int j, int k) {
+        super.a();
+
+        for (int l = 0; l < this.h.size(); ++l) {
+            WorldMapHumanTracker worldmaphumantracker = (WorldMapHumanTracker) this.h.get(l);
+
+            if (worldmaphumantracker.b[i] < 0 || worldmaphumantracker.b[i] > j) {
+                worldmaphumantracker.b[i] = j;
+            }
+
+            if (worldmaphumantracker.c[i] < 0 || worldmaphumantracker.c[i] < k) {
+                worldmaphumantracker.c[i] = k;
+            }
+        }
+    }
+}

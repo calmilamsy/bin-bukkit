@@ -1,75 +1,70 @@
-/*    */ package net.minecraft.server;
-/*    */ 
-/*    */ import org.bukkit.Location;
-/*    */ import org.bukkit.craftbukkit.event.CraftEventFactory;
-/*    */ import org.bukkit.craftbukkit.inventory.CraftItemStack;
-/*    */ import org.bukkit.event.player.PlayerBucketFillEvent;
-/*    */ 
-/*    */ 
-/*    */ public class EntityCow
-/*    */   extends EntityAnimal
-/*    */ {
-/*    */   public EntityCow(World world) {
-/* 13 */     super(world);
-/* 14 */     this.texture = "/mob/cow.png";
-/* 15 */     b(0.9F, 1.3F);
-/*    */   }
-/*    */ 
-/*    */   
-/* 19 */   public void b(NBTTagCompound nbttagcompound) { super.b(nbttagcompound); }
-/*    */ 
-/*    */ 
-/*    */   
-/* 23 */   public void a(NBTTagCompound nbttagcompound) { super.a(nbttagcompound); }
-/*    */ 
-/*    */ 
-/*    */   
-/* 27 */   protected String g() { return "mob.cow"; }
-/*    */ 
-/*    */ 
-/*    */   
-/* 31 */   protected String h() { return "mob.cowhurt"; }
-/*    */ 
-/*    */ 
-/*    */   
-/* 35 */   protected String i() { return "mob.cowhurt"; }
-/*    */ 
-/*    */ 
-/*    */   
-/* 39 */   protected float k() { return 0.4F; }
-/*    */ 
-/*    */ 
-/*    */   
-/* 43 */   protected int j() { return Item.LEATHER.id; }
-/*    */ 
-/*    */   
-/*    */   public boolean a(EntityHuman entityhuman) {
-/* 47 */     ItemStack itemstack = entityhuman.inventory.getItemInHand();
-/*    */     
-/* 49 */     if (itemstack != null && itemstack.id == Item.BUCKET.id) {
-/*    */       
-/* 51 */       Location loc = getBukkitEntity().getLocation();
-/* 52 */       PlayerBucketFillEvent event = CraftEventFactory.callPlayerBucketFillEvent(entityhuman, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), -1, itemstack, Item.MILK_BUCKET);
-/*    */       
-/* 54 */       if (event.isCancelled()) {
-/* 55 */         return false;
-/*    */       }
-/*    */       
-/* 58 */       CraftItemStack itemInHand = (CraftItemStack)event.getItemStack();
-/* 59 */       byte data = (itemInHand.getData() == null) ? 0 : itemInHand.getData().getData();
-/* 60 */       itemstack = new ItemStack(itemInHand.getTypeId(), itemInHand.getAmount(), data);
-/*    */       
-/* 62 */       entityhuman.inventory.setItem(entityhuman.inventory.itemInHandIndex, itemstack);
-/*    */ 
-/*    */       
-/* 65 */       return true;
-/*    */     } 
-/* 67 */     return false;
-/*    */   }
-/*    */ }
+package net.minecraft.server;
 
+// CraftBukkit start
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.event.player.PlayerBucketFillEvent;
+// CraftBukkit end
 
-/* Location:              C:\Users\calmilamsy\Downloads\craftbukkit-1092-0f15ea67210f5e56ac6a23b7a714564654888e9f.jar!\net\minecraft\server\EntityCow.class
- * Java compiler version: 5 (49.0)
- * JD-Core Version:       1.0.4
- */
+public class EntityCow extends EntityAnimal {
+
+    public EntityCow(World world) {
+        super(world);
+        this.texture = "/mob/cow.png";
+        this.b(0.9F, 1.3F);
+    }
+
+    public void b(NBTTagCompound nbttagcompound) {
+        super.b(nbttagcompound);
+    }
+
+    public void a(NBTTagCompound nbttagcompound) {
+        super.a(nbttagcompound);
+    }
+
+    protected String g() {
+        return "mob.cow";
+    }
+
+    protected String h() {
+        return "mob.cowhurt";
+    }
+
+    protected String i() {
+        return "mob.cowhurt";
+    }
+
+    protected float k() {
+        return 0.4F;
+    }
+
+    protected int j() {
+        return Item.LEATHER.id;
+    }
+
+    public boolean a(EntityHuman entityhuman) {
+        ItemStack itemstack = entityhuman.inventory.getItemInHand();
+
+        if (itemstack != null && itemstack.id == Item.BUCKET.id) {
+            // CraftBukkit start - got milk?
+            Location loc = this.getBukkitEntity().getLocation();
+            PlayerBucketFillEvent event = CraftEventFactory.callPlayerBucketFillEvent(entityhuman, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), -1, itemstack, Item.MILK_BUCKET);
+
+            if (event.isCancelled()) {
+                return false;
+            }
+
+            CraftItemStack itemInHand = (CraftItemStack) event.getItemStack();
+            byte data = itemInHand.getData() == null ? (byte) 0 : itemInHand.getData().getData();
+            itemstack = new ItemStack(itemInHand.getTypeId(), itemInHand.getAmount(), data);
+
+            entityhuman.inventory.setItem(entityhuman.inventory.itemInHandIndex, itemstack);
+            // CraftBukkit end
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+}

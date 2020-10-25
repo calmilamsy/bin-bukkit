@@ -1,5 +1,6 @@
 package org.bukkit.util.mixin;
 
+import net.minecraft.level.chunk.Chunk;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
@@ -12,4 +13,6 @@ public interface CraftLevel {
     CraftWorld getWorld();
 
     CraftServer getServer();
+
+    Chunk getChunkAt(int i, int j);
 }

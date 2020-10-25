@@ -2,9 +2,12 @@ package org.bukkit.mixin;
 
 import net.minecraft.level.Level;
 import net.minecraft.level.LevelProperties;
+import net.minecraft.level.chunk.Chunk;
 import net.minecraft.level.dimension.Dimension;
 import net.minecraft.level.dimension.DimensionData;
+import net.minecraft.level.source.LevelSource;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tileentity.TileEntityBase;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -21,7 +24,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.List;
 import java.util.Random;
 
 @Mixin(Level.class)
@@ -32,9 +37,23 @@ public abstract class MixinLevel implements CraftLevel {
     @Shadow protected LevelProperties properties;
     @Shadow public boolean field_221;
     @Shadow @Final public Dimension dimension;
-    public ChunkGenerator generator;
+
+    @Shadow protected LevelSource cache;
+
+    @Shadow public abstract int getTileId(int x, int y, int z);
+
+    @Shadow protected abstract void method_235(int i, int j, int k, int i1);
+
     @Mutable
     private @Final CraftWorld world;
+    public boolean pvpMode;
+    public boolean keepSpawnInMemory = true;
+    public ChunkGenerator generator;
+    Chunk lastChunkAccessed;
+    int lastXAccessed = Integer.MIN_VALUE;
+    int lastZAccessed = Integer.MIN_VALUE;
+    final Object chunkLock = new Object();
+    private List<TileEntityBase> tileEntitiesToUnload;
 
 
     @Override
@@ -83,4 +102,30 @@ public abstract class MixinLevel implements CraftLevel {
         else
             return dimension.method_1770(x, z);
     }
+
+    @Override
+    public Chunk getChunkAt(int i, int j) {
+        Chunk result;
+        synchronized (this.chunkLock) {
+            if (this.lastChunkAccessed == null || this.lastXAccessed != i || this.lastZAccessed != j) {
+                this.lastXAccessed = i;
+                this.lastZAccessed = j;
+                this.lastChunkAccessed = cache.getChunk(i, j);
+            }
+            result = this.lastChunkAccessed;
+        }
+        return result;
+    }
+
+    @Inject(method = "setTile(IIII)Z", at = @At("HEAD"))
+    private void cb3(int i, int j, int k, int i1, CallbackInfoReturnable<Boolean> cir) {
+        old = getTileId(i, j, k);
+    }
+
+    @Redirect(method = "setTile(IIII)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/level/Level;method_235(IIII)V"))
+    private void cb4(Level level, int i, int j, int k, int i1) {
+        method_235(i, j, k, i1 == 0 ? old : i1);
+    }
+
+    private int old;
 }

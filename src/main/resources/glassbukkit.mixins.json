@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.glasslauncher.glassbukkit.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinBlockBase",
+    "WorldAccessor"
+  ],
+  "server": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

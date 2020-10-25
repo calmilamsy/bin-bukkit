@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "glassbukkit",
+  "version": "${version}",
+
+  "name": "GlassBukkit",
+  "description": "This is a fabric port of the Bukkit API.",
+  "authors": [
+    "calmilamsy"
+  ],
+  "contact": {
+    "homepage": "https://glass-launcher.net/",
+    "sources": "https://github.com/calmilamsy/glassbukkit"
+  },
+
+  "license": "LGPL",
+  "icon": "assets/glassbukkit/icon.png",
+
+  "environment": "*",
+  "mixins": [
+    "glassbukkit.mixins.json"
+  ],
+
+  "depends": {
+    "minecraft": "1.0.0-beta.7.3"
+  }
+}

@@ -1,6 +1,7 @@
 package org.bukkit.craftbukkit;
 
 import com.google.common.collect.MapMaker;
+import net.minecraft.server.level.ServerLevel;
 import org.bukkit.craftbukkit.entity.*;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Entity;
@@ -44,7 +45,7 @@ public class CraftWorld implements World {
 
     private static final Random rand = new Random();
 
-    public CraftWorld(WorldServer world, ChunkGenerator gen, Environment env) {
+    public CraftWorld(ServerLevel world, ChunkGenerator gen, Environment env) {
         this.world = world;
         this.generator = gen;
 

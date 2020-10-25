@@ -1,11 +1,12 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.glasslauncher.glassbukkit.mixins",
+  "package": "org.bukkit.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinBlockBase",
-    "WorldAccessor"
+    "MixinLevel",
+    "MixinNetherrack"
   ],
   "server": [
   ],

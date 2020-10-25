@@ -6,7 +6,8 @@
   "mixins": [
     "MixinBlockBase",
     "MixinLevel",
-    "MixinNetherrack"
+    "MixinNetherrack",
+    "accessor.LevelPropertiesAccessor"
   ],
   "server": [
   ],

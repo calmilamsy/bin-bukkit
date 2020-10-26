@@ -1,10 +1,14 @@
 package org.bukkit.mixin;
 
+import net.minecraft.block.BlockBase;
+import net.minecraft.entity.EntityBase;
+import net.minecraft.entity.Item;
+import net.minecraft.entity.Living;
+import net.minecraft.entity.player.ServerPlayer;
 import net.minecraft.level.Level;
 import net.minecraft.level.LevelProperties;
 import net.minecraft.level.chunk.Chunk;
 import net.minecraft.level.dimension.Dimension;
-import net.minecraft.level.dimension.DimensionData;
 import net.minecraft.level.source.LevelSource;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tileentity.TileEntityBase;
@@ -13,6 +17,10 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
+import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.mixin.accessor.LevelPropertiesAccessor;
 import org.bukkit.util.mixin.CraftLevel;
@@ -25,6 +33,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
 import java.util.Random;
@@ -43,6 +52,8 @@ public abstract class MixinLevel implements CraftLevel {
     @Shadow public abstract int getTileId(int x, int y, int z);
 
     @Shadow protected abstract void method_235(int i, int j, int k, int i1);
+
+    @Shadow public abstract boolean spawnEntity(EntityBase arg);
 
     @Mutable
     private @Final CraftWorld world;
@@ -122,10 +133,58 @@ public abstract class MixinLevel implements CraftLevel {
         old = getTileId(i, j, k);
     }
 
-    @Redirect(method = "setTile(IIII)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/level/Level;method_235(IIII)V"))
+    @Redirect(method = {"setTile(IIII)Z", "placeBlockWithMetaData(IIIII)Z"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/level/Level;method_235(IIII)V"))
     private void cb4(Level level, int i, int j, int k, int i1) {
         method_235(i, j, k, i1 == 0 ? old : i1);
     }
 
+    @Inject(method = "placeBlockWithMetaData(IIIII)Z", at = @At("HEAD"))
+    private void cb5(int i, int j, int k, int i1, int j1, CallbackInfoReturnable<Boolean> cir) {
+        old = getTileId(i, j, k);
+    }
+
+    @Inject(method = "updateAdjacentBlock(IIII)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockBase;onAdjacentBlockUpdate(Lnet/minecraft/level/Level;IIII)V", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
+    private void cb6(int x, int y, int z, int id, CallbackInfo ci, BlockBase var5) {
+        CraftWorld world = getWorld();
+        if (world != null) {
+            BlockPhysicsEvent event = new BlockPhysicsEvent(world.getBlockAt(x, y, z), id);
+            this.getServer().getPluginManager().callEvent(event);
+
+            if (event.isCancelled()) {
+                ci.cancel();
+            }
+        }
+    }
+
+    @Inject(method = "spawnEntity(Lnet/minecraft/entity/EntityBase;)Z", at = @At("HEAD"))
+    private void cb7(EntityBase arg, CallbackInfoReturnable<Boolean> cir) {
+        if (spawnReasonAbsent)
+            spawnReason = CreatureSpawnEvent.SpawnReason.CUSTOM;
+        else
+            spawnReasonAbsent = true;
+        if (arg instanceof Living && !(arg instanceof ServerPlayer)) {
+            CreatureSpawnEvent event = CraftEventFactory.callCreatureSpawnEvent((Living) arg, spawnReason);
+
+            if (event.isCancelled()) {
+                cir.setReturnValue(false);
+            }
+        } else if (arg instanceof Item) {
+            ItemSpawnEvent event = CraftEventFactory.callItemSpawnEvent((Item) arg);
+            if (event.isCancelled()) {
+                cir.setReturnValue(false);
+            }
+        }
+    }
+
+    @Override
+    public boolean addEntity(EntityBase entityBase, CreatureSpawnEvent.SpawnReason spawnReason) {
+        spawnReasonAbsent = false;
+        this.spawnReason = spawnReason;
+        return spawnEntity(entityBase);
+    }
+
+
     private int old;
+    private CreatureSpawnEvent.SpawnReason spawnReason;
+    private boolean spawnReasonAbsent = true;
 }

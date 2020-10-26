@@ -1,5 +1,7 @@
 package org.bukkit.craftbukkit.event;
 
+import net.minecraft.entity.Item;
+import net.minecraft.entity.Living;
 import net.minecraft.server.ChunkCoordinates;
 import net.minecraft.server.EntityChicken;
 import net.minecraft.server.EntityCow;
@@ -184,7 +186,7 @@ public class CraftEventFactory {
     /**
      * CreatureSpawnEvent
      */
-    public static CreatureSpawnEvent callCreatureSpawnEvent(EntityLiving entityliving, SpawnReason spawnReason) {
+    public static CreatureSpawnEvent callCreatureSpawnEvent(Living entityliving, SpawnReason spawnReason) {
         org.bukkit.entity.Entity entity = entityliving.getBukkitEntity();
         CraftServer craftServer = (CraftServer) entity.getServer();
 
@@ -243,8 +245,9 @@ public class CraftEventFactory {
 
     /**
      * ItemSpawnEvent
+     * @param entityitem
      */
-    public static ItemSpawnEvent callItemSpawnEvent(EntityItem entityitem) {
+    public static ItemSpawnEvent callItemSpawnEvent(Item entityitem) {
         org.bukkit.entity.Entity entity = entityitem.getBukkitEntity();
         CraftServer craftServer = (CraftServer) entity.getServer();
 

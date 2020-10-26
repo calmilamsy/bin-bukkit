@@ -5,6 +5,8 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinBlockBase",
+    "MixinButton",
+    "MixinCactus",
     "MixinLevel",
     "MixinNetherrack",
     "accessor.LevelPropertiesAccessor"

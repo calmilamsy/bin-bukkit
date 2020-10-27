@@ -7,6 +7,8 @@
     "MixinBlockBase",
     "MixinButton",
     "MixinCactus",
+    "MixinDoor",
+    "MixinFire",
     "MixinLevel",
     "MixinNetherrack",
     "accessor.LevelPropertiesAccessor"

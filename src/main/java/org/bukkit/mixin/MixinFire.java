@@ -4,7 +4,12 @@ import net.minecraft.block.BlockBase;
 import net.minecraft.block.Fire;
 import net.minecraft.block.material.Material;
 import net.minecraft.level.Level;
+import net.minecraft.level.TileView;
+import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.material.MaterialData;
+import org.bukkit.util.mixin.CraftLevel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,6 +24,16 @@ public abstract class MixinFire extends BlockBase {
     }
 
     @Shadow public abstract boolean canPlaceAt(Level level, int x, int y, int z);
+
+    @Shadow public abstract int getTickrate();
+
+    @Shadow protected abstract boolean method_1826(Level arg, int i, int j, int k);
+
+    @Shadow public abstract boolean method_1824(TileView arg, int i, int j, int k);
+
+    @Shadow protected abstract void method_1823(Level arg, int i, int j, int k, int i1, Random random, int j1);
+
+    @Shadow protected abstract int method_1827(Level arg, int i, int j, int k);
 
     /**
      * @author calmilamsy
@@ -41,27 +56,27 @@ public abstract class MixinFire extends BlockBase {
                 world.setTileMeta(i, j, k, l + random.nextInt(3) / 2);
             }
 
-            world.method_216(i, j, k, id, this.c());
-            if (!flag && !this.g(world, i, j, k)) {
-                if (!world.e(i, j - 1, k) || l > 3) {
+            world.method_216(i, j, k, id, this.getTickrate());
+            if (!flag && !this.method_1826(world, i, j, k)) {
+                if (!world.canSuffocate(i, j - 1, k) || l > 3) {
                     world.setTile(i, j, k, 0);
                 }
-            } else if (!flag && !this.b(world, i, j - 1, k) && l == 15 && random.nextInt(4) == 0) {
+            } else if (!flag && !this.method_1824(world, i, j - 1, k) && l == 15 && random.nextInt(4) == 0) {
                 world.setTile(i, j, k, 0);
             } else {
-                this.a(world, i + 1, j, k, 300, random, l);
-                this.a(world, i - 1, j, k, 300, random, l);
-                this.a(world, i, j - 1, k, 250, random, l);
-                this.a(world, i, j + 1, k, 250, random, l);
-                this.a(world, i, j, k - 1, 300, random, l);
-                this.a(world, i, j, k + 1, 300, random, l);
+                this.method_1823(world, i + 1, j, k, 300, random, l);
+                this.method_1823(world, i - 1, j, k, 300, random, l);
+                this.method_1823(world, i, j - 1, k, 250, random, l);
+                this.method_1823(world, i, j + 1, k, 250, random, l);
+                this.method_1823(world, i, j, k - 1, 300, random, l);
+                this.method_1823(world, i, j, k + 1, 300, random, l);
 
                 // CraftBukkit start - Call to stop spread of fire.
-                org.bukkit.Server server = world.getServer();
-                org.bukkit.World bworld = world.getWorld();
+                org.bukkit.Server server = ((CraftLevel) world).getServer();
+                org.bukkit.World bworld = ((CraftLevel) world).getWorld();
 
                 BlockIgniteEvent.IgniteCause igniteCause = BlockIgniteEvent.IgniteCause.SPREAD;
-                org.bukkit.block.Block fromBlock = bworld.getTileId(i, j, k);
+                org.bukkit.block.Block fromBlock = bworld.getBlockAt(i, j, k);
                 // CraftBukkit end
 
                 for (int i1 = i - 1; i1 <= i + 1; ++i1) {
@@ -74,21 +89,21 @@ public abstract class MixinFire extends BlockBase {
                                     l1 += (k1 - (j + 1)) * 100;
                                 }
 
-                                int i2 = this.h(world, i1, k1, j1);
+                                int i2 = this.method_1827(world, i1, k1, j1);
 
                                 if (i2 > 0) {
                                     int j2 = (i2 + 40) / (l + 30);
 
-                                    if (j2 > 0 && random.nextInt(l1) <= j2 && (!world.v() || !world.canRainAt(i1, k1, j1)) && !world.canRainAt(i1 - 1, k1, k) && !world.canRainAt(i1 + 1, k1, j1) && !world.canRainAt(i1, k1, j1 - 1) && !world.canRainAt(i1, k1, j1 + 1)) {
+                                    if (j2 > 0 && random.nextInt(l1) <= j2 && (!world.raining() || !world.canRainAt(i1, k1, j1)) && !world.canRainAt(i1 - 1, k1, k) && !world.canRainAt(i1 + 1, k1, j1) && !world.canRainAt(i1, k1, j1 - 1) && !world.canRainAt(i1, k1, j1 + 1)) {
                                         int k2 = l + random.nextInt(5) / 4;
 
                                         if (k2 > 15) {
                                             k2 = 15;
                                         }
                                         // CraftBukkit start - Call to stop spread of fire.
-                                        org.bukkit.block.BlockBase block = bworld.getTileId(i1, k1, j1);
+                                        Block block = bworld.getBlockAt(i1, k1, j1);
 
-                                        if (block.getTileId() != BlockBase.FIRE.id) {
+                                        if (block.getTypeId() != BlockBase.FIRE.id) {
                                             BlockIgniteEvent event = new BlockIgniteEvent(block, igniteCause, null);
                                             server.getPluginManager().callEvent(event);
 
@@ -96,8 +111,8 @@ public abstract class MixinFire extends BlockBase {
                                                 continue;
                                             }
 
-                                            org.bukkit.block.BlockState blockState = bworld.getTileId(i1, k1, j1).getState();
-                                            blockState.setTile(this.id);
+                                            org.bukkit.block.BlockState blockState = bworld.getBlockAt(i1, k1, j1).getState();
+                                            blockState.setTypeId(this.id);
                                             blockState.setData(new MaterialData(this.id, (byte) k2));
 
                                             BlockSpreadEvent spreadEvent = new BlockSpreadEvent(blockState.getBlock(), fromBlock, blockState);

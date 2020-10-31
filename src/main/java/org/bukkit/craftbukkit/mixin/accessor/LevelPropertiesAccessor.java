@@ -1,4 +1,4 @@
-package org.bukkit.mixin.accessor;
+package org.bukkit.craftbukkit.mixin.accessor;
 
 import net.minecraft.level.LevelProperties;
 import org.spongepowered.asm.mixin.Mixin;

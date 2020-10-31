@@ -1,4 +1,4 @@
-package org.bukkit.mixin;
+package org.bukkit.craftbukkit.mixin;
 
 import net.minecraft.block.Cactus;
 import net.minecraft.entity.EntityBase;
@@ -6,7 +6,7 @@ import net.minecraft.entity.Living;
 import net.minecraft.level.Level;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.util.mixin.CraftLevel;
+import org.bukkit.craftbukkit.util.mixin.CraftLevel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

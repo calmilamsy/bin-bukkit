@@ -1,4 +1,4 @@
-package org.bukkit.mixin;
+package org.bukkit.craftbukkit.mixin;
 
 import net.minecraft.block.BlockBase;
 import net.minecraft.block.Netherrack;
@@ -6,7 +6,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.level.Level;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockRedstoneEvent;
-import org.bukkit.util.mixin.CraftLevel;
+import org.bukkit.craftbukkit.util.mixin.CraftLevel;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(Netherrack.class)

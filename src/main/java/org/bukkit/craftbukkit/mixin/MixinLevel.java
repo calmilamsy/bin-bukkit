@@ -1,4 +1,4 @@
-package org.bukkit.mixin;
+package org.bukkit.craftbukkit.mixin;
 
 import net.minecraft.block.BlockBase;
 import net.minecraft.entity.EntityBase;
@@ -22,8 +22,8 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.generator.ChunkGenerator;
-import org.bukkit.mixin.accessor.LevelPropertiesAccessor;
-import org.bukkit.util.mixin.CraftLevel;
+import org.bukkit.craftbukkit.mixin.accessor.LevelPropertiesAccessor;
+import org.bukkit.craftbukkit.util.mixin.CraftLevel;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;

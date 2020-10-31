@@ -1,4 +1,4 @@
-package org.bukkit.util.mixin;
+package org.bukkit.craftbukkit.util.mixin;
 
 import net.minecraft.entity.EntityBase;
 import net.minecraft.level.chunk.Chunk;

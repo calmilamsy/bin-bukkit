@@ -1,4 +1,4 @@
-package org.bukkit.mixin;
+package org.bukkit.craftbukkit.mixin;
 
 import net.minecraft.block.BlockBase;
 import org.spongepowered.asm.mixin.Mixin;

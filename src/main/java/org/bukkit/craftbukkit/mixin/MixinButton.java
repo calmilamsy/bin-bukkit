@@ -1,11 +1,11 @@
-package org.bukkit.mixin;
+package org.bukkit.craftbukkit.mixin;
 
 import net.minecraft.block.Button;
 import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.level.Level;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockRedstoneEvent;
-import org.bukkit.util.mixin.CraftLevel;
+import org.bukkit.craftbukkit.util.mixin.CraftLevel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

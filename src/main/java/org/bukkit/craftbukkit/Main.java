@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-import net.minecraft.server.MinecraftServer;
+import org.bukkit.craftbukkit.util.mixin.StaticMethods;
 
 public class Main {
     public static boolean useJline = true;
@@ -124,7 +124,7 @@ public class Main {
                     useJline = false;
                 }
 
-                MinecraftServer.main(options);
+                StaticMethods.MinecraftServer.main.accept(options);
             } catch (Throwable t) {
                 t.printStackTrace();
             }

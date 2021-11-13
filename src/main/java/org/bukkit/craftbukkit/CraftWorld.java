@@ -1,11 +1,11 @@
 package org.bukkit.craftbukkit;
 
+import TileEntity;
+import WorldServer;
 import com.google.common.collect.MapMaker;
 import net.minecraft.server.level.ServerLevel;
 import org.bukkit.craftbukkit.entity.*;
 import org.bukkit.entity.*;
-import org.bukkit.entity.Entity;
-
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentMap;
 import java.util.List;
@@ -13,15 +13,12 @@ import java.util.Random;
 import java.util.UUID;
 
 import net.minecraft.server.*;
-
-import org.bukkit.entity.Arrow;
 import org.bukkit.Effect;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.world.SpawnChangeEvent;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Boat;
 import org.bukkit.Chunk;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;

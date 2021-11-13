@@ -7,14 +7,14 @@ import org.bukkit.event.Event;
  * Stores details for players attempting to log in
  */
 public class PlayerPreLoginEvent extends Event {
-    private Result result;
+    private org.bukkit.event.player.PlayerPreLoginEvent.Result result;
     private String message;
     private String name;
     private InetAddress ipAddress;
 
     public PlayerPreLoginEvent(String name, InetAddress ipAddress) {
         super(Type.PLAYER_PRELOGIN);
-        this.result = Result.ALLOWED;
+        this.result = org.bukkit.event.player.PlayerPreLoginEvent.Result.ALLOWED;
         this.message = "";
         this.name = name;
         this.ipAddress = ipAddress;
@@ -25,7 +25,7 @@ public class PlayerPreLoginEvent extends Event {
      *
      * @return Current Result of the login
      */
-    public Result getResult() {
+    public org.bukkit.event.player.PlayerPreLoginEvent.Result getResult() {
         return result;
     }
 
@@ -34,7 +34,7 @@ public class PlayerPreLoginEvent extends Event {
      *
      * @param result New result to set
      */
-    public void setResult(final Result result) {
+    public void setResult(final org.bukkit.event.player.PlayerPreLoginEvent.Result result) {
         this.result = result;
     }
 
@@ -60,7 +60,7 @@ public class PlayerPreLoginEvent extends Event {
      * Allows the player to log in
      */
     public void allow() {
-        result = Result.ALLOWED;
+        result = org.bukkit.event.player.PlayerPreLoginEvent.Result.ALLOWED;
         message = "";
     }
 
@@ -70,7 +70,7 @@ public class PlayerPreLoginEvent extends Event {
      * @param result New result for disallowing the player
      * @param message Kick message to display to the user
      */
-    public void disallow(final Result result, final String message) {
+    public void disallow(final org.bukkit.event.player.PlayerPreLoginEvent.Result result, final String message) {
         this.result = result;
         this.message = message;
     }

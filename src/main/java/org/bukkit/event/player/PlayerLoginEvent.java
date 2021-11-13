@@ -6,16 +6,16 @@ import org.bukkit.entity.Player;
  * Stores details for players attempting to log in
  */
 public class PlayerLoginEvent extends PlayerEvent {
-    private Result result;
+    private org.bukkit.event.player.PlayerLoginEvent.Result result;
     private String message;
 
     public PlayerLoginEvent(final Player player) {
         super(Type.PLAYER_LOGIN, player);
-        this.result = Result.ALLOWED;
+        this.result = org.bukkit.event.player.PlayerLoginEvent.Result.ALLOWED;
         this.message = "";
     }
 
-    public PlayerLoginEvent(final Type type, final Player player, final Result result, final String message) {
+    public PlayerLoginEvent(final Type type, final Player player, final org.bukkit.event.player.PlayerLoginEvent.Result result, final String message) {
         super(type, player);
         this.result = result;
         this.message = message;
@@ -26,7 +26,7 @@ public class PlayerLoginEvent extends PlayerEvent {
      *
      * @return Current Result of the login
      */
-    public Result getResult() {
+    public org.bukkit.event.player.PlayerLoginEvent.Result getResult() {
         return result;
     }
 
@@ -35,7 +35,7 @@ public class PlayerLoginEvent extends PlayerEvent {
      *
      * @param result New result to set
      */
-    public void setResult(final Result result) {
+    public void setResult(final org.bukkit.event.player.PlayerLoginEvent.Result result) {
         this.result = result;
     }
 
@@ -61,7 +61,7 @@ public class PlayerLoginEvent extends PlayerEvent {
      * Allows the player to log in
      */
     public void allow() {
-        result = Result.ALLOWED;
+        result = org.bukkit.event.player.PlayerLoginEvent.Result.ALLOWED;
         message = "";
     }
 
@@ -71,7 +71,7 @@ public class PlayerLoginEvent extends PlayerEvent {
      * @param result New result for disallowing the player
      * @param message Kick message to display to the user
      */
-    public void disallow(final Result result, final String message) {
+    public void disallow(final org.bukkit.event.player.PlayerLoginEvent.Result result, final String message) {
         this.result = result;
         this.message = message;
     }

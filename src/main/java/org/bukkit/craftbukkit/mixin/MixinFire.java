@@ -3,8 +3,8 @@ package org.bukkit.craftbukkit.mixin;
 import net.minecraft.block.BlockBase;
 import net.minecraft.block.Fire;
 import net.minecraft.block.material.Material;
+import net.minecraft.level.BlockView;
 import net.minecraft.level.Level;
-import net.minecraft.level.TileView;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
@@ -29,7 +29,7 @@ public abstract class MixinFire extends BlockBase {
 
     @Shadow protected abstract boolean method_1826(Level arg, int i, int j, int k);
 
-    @Shadow public abstract boolean method_1824(TileView arg, int i, int j, int k);
+    @Shadow public abstract boolean method_1824(BlockView arg, int i, int j, int k);
 
     @Shadow protected abstract void method_1823(Level arg, int i, int j, int k, int i1, Random random, int j1);
 
@@ -47,7 +47,7 @@ public abstract class MixinFire extends BlockBase {
             world.setTile(i, j, k, 0);
         }
 
-        if (!flag && world.raining() && (world.canRainAt(i, j, k) || world.canRainAt(i - 1, j, k) || world.canRainAt(i + 1, j, k) || world.canRainAt(i, j, k - 1) || world.canRainAt(i, j, k + 1))) {
+        if (!flag && world.isRaining() && (world.canRainAt(i, j, k) || world.canRainAt(i - 1, j, k) || world.canRainAt(i + 1, j, k) || world.canRainAt(i, j, k - 1) || world.canRainAt(i, j, k + 1))) {
             world.setTile(i, j, k, 0);
         } else {
             int l = world.getTileMeta(i, j, k);
@@ -94,7 +94,7 @@ public abstract class MixinFire extends BlockBase {
                                 if (i2 > 0) {
                                     int j2 = (i2 + 40) / (l + 30);
 
-                                    if (j2 > 0 && random.nextInt(l1) <= j2 && (!world.raining() || !world.canRainAt(i1, k1, j1)) && !world.canRainAt(i1 - 1, k1, k) && !world.canRainAt(i1 + 1, k1, j1) && !world.canRainAt(i1, k1, j1 - 1) && !world.canRainAt(i1, k1, j1 + 1)) {
+                                    if (j2 > 0 && random.nextInt(l1) <= j2 && (!world.isRaining() || !world.canRainAt(i1, k1, j1)) && !world.canRainAt(i1 - 1, k1, k) && !world.canRainAt(i1 + 1, k1, j1) && !world.canRainAt(i1, k1, j1 - 1) && !world.canRainAt(i1, k1, j1 + 1)) {
                                         int k2 = l + random.nextInt(5) / 4;
 
                                         if (k2 > 15) {

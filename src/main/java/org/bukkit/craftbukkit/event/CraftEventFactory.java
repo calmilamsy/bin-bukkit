@@ -247,7 +247,7 @@ public class CraftEventFactory {
      * ItemSpawnEvent
      * @param entityitem
      */
-    public static ItemSpawnEvent callItemSpawnEvent(Item entityitem) {
+    public static ItemSpawnEvent callItemSpawnEvent(net.minecraft.entity.Item entityitem) {
         org.bukkit.entity.Entity entity = entityitem.getBukkitEntity();
         CraftServer craftServer = (CraftServer) entity.getServer();
 

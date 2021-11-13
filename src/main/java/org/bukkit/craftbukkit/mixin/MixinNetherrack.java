@@ -18,7 +18,7 @@ public class MixinNetherrack extends BlockBase {
 
     @Override
     public void onAdjacentBlockUpdate(Level level, int x, int y, int z, int id) {
-        if (BY_ID[id] != null && BY_ID[id].emitsRedstonePower()) {
+        if (BY_ID[id] != null && BY_ID[id].getEmitsRedstonePower()) {
             Block block = ((CraftLevel) level).getWorld().getBlockAt(x, y, z);
             int power = block.getBlockPower();
 

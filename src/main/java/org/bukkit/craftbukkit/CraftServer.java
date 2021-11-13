@@ -2,6 +2,7 @@ package org.bukkit.craftbukkit;
 
 import java.io.FileNotFoundException;
 import org.bukkit.generator.ChunkGenerator;
+import GameMode;
 import com.avaje.ebean.config.DataSourceConfig;
 import com.avaje.ebean.config.ServerConfig;
 import com.avaje.ebean.config.dbplatform.SQLitePlatform;

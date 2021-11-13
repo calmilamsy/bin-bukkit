@@ -111,7 +111,7 @@ public abstract class MixinLevel implements CraftLevel {
         if (generator != null)
             return generator.canSpawn(getWorld(), x, z);
         else
-            return dimension.method_1770(x, z);
+            return dimension.canSpawnOn(x, z);
     }
 
     @Override
